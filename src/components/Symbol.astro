@@ -1,0 +1,43 @@
+---
+interface Props {
+    name: string;
+    fill?: boolean;
+    size?: string;
+    color?: string;
+    [key: string]: any;
+}
+
+const { name, fill, size = "24px", color, ...attributes } = Astro.props;
+const iconStyle = fill ? "-fill" : "";
+
+const { default: innerHTML } = await import(
+    `../assets/symbols/rounded/${name}${iconStyle}.svg?raw`
+).catch(async () => {
+    // Fallback icon if the specified icon is not found
+    const { default: fallbackInnerHTML } = await import(
+        `../assets/symbols/rounded/emoji_symbols.svg?raw`
+    );
+    return { default: fallbackInnerHTML };
+});
+---
+
+<span
+    style={{
+        color,
+        width: size,
+        height: size,
+        pointerEvents: "none",
+        ...attributes.style,
+    }}
+    {...attributes}
+>
+    <Fragment set:html={innerHTML} />
+</span>
+
+<style is:global>
+    span > svg {
+        width: inherit;
+        height: inherit;
+        fill: currentColor;
+    }
+</style>

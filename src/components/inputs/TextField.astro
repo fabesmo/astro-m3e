@@ -1,0 +1,463 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Symbol from "../Symbol.astro";
+
+interface Props extends HTMLAttributes<"input"> {
+    label: string;
+    icon?: string;
+    iconSrc?: string;
+    supportingText?: string;
+}
+
+const {
+    label = "Label text",
+    icon,
+    iconSrc,
+    supportingText,
+    ...attributes
+} = Astro.props;
+
+const hasMaxLength = "maxlength" in attributes && attributes.maxlength !== "";
+---
+
+<text-field {...attributes?.id ? { id: `${attributes.id}-text-field` } : {}}>
+    <label {...attributes?.id ? { for: attributes.id } : {}}>
+        {icon && <Symbol name={icon} class="icon" />}
+
+        {
+            iconSrc && (
+                <img
+                    src={iconSrc}
+                    alt={label}
+                    class="icon"
+                    style={{
+                        width: "1.5rem",
+                        height: "1.5rem",
+                        objectFit: "contain",
+                    }}
+                />
+            )
+        }
+
+        <span class={`label-text ${(icon || iconSrc) && "with-icon"}`}>
+            {label}
+        </span>
+        <input class={`${(icon || iconSrc) && "with-icon"}`} {...attributes} />
+
+        <Symbol name="error" fill class="trailing-icon" hidden />
+    </label>
+
+    {
+        (supportingText || hasMaxLength) && (
+            <div class="supporting-container">
+                <p class="supporting-text" aria-live="polite">
+                    {supportingText}
+                </p>
+
+                {hasMaxLength && (
+                    <p class="character-counter">0/{attributes.maxlength}</p>
+                )}
+            </div>
+        )
+    }
+</text-field>
+
+<script>
+    customElements.define(
+        "text-field",
+        class extends HTMLElement {
+            static formAssociated = true;
+
+            label!: HTMLLabelElement;
+            labelText!: HTMLSpanElement;
+            trailingIcon!: HTMLSpanElement;
+            supportingText!: HTMLParagraphElement;
+            initialSupportingText: string = "";
+            input!: HTMLInputElement;
+            characterCounter!: HTMLParagraphElement;
+
+            constructor() {
+                super();
+            }
+
+            connectedCallback() {
+                const uniqueId = crypto.randomUUID();
+
+                this.label = this.querySelector("label") as HTMLLabelElement;
+                this.labelText = this.querySelector(
+                    ".label-text",
+                ) as HTMLSpanElement;
+                this.trailingIcon = this.querySelector(
+                    ".trailing-icon",
+                ) as HTMLSpanElement;
+                this.supportingText = this.querySelector(
+                    ".supporting-text",
+                ) as HTMLParagraphElement;
+
+                if (this.supportingText) {
+                    this.supportingText.id = `${uniqueId}-supporting-text`;
+                    this.initialSupportingText = this.supportingText
+                        .textContent as string;
+                }
+
+                this.input = this.querySelector("input") as HTMLInputElement;
+                this.input.setAttribute(
+                    "aria-describedby",
+                    `${uniqueId}-supporting-text`,
+                );
+
+                this.characterCounter = this.querySelector(
+                    ".character-counter",
+                ) as HTMLParagraphElement;
+
+                this.input.oninput = () => {
+                    const maxLength = this.input.maxLength;
+                    if (this.characterCounter) {
+                        this.characterCounter.textContent = `${this.input.value.length}/${maxLength}`;
+                    }
+                };
+
+                this.input.onchange = () => {
+                    this.labelText.classList.toggle(
+                        "active",
+                        this.input.value.length > 0,
+                    );
+                    this.toggleError(this.input.checkValidity());
+                };
+
+                this.input.addEventListener("invalid", (e) => {
+                    this.toggleError(false);
+                });
+
+                // Check if value is set on load
+                if (this.input.value) {
+                    this.labelText.classList.add("active");
+                    if (this.characterCounter) {
+                        this.characterCounter.textContent = `${this.input.value.length}/${this.input.maxLength}`;
+                    }
+                }
+            }
+
+            toggleError(isValid: boolean) {
+                this.label.classList.toggle("error", !isValid);
+                this.labelText.classList.toggle("error", !isValid);
+                this.trailingIcon.classList.toggle("error", !isValid);
+
+                if (this.supportingText) {
+                    const message = !isValid
+                        ? this.input.validationMessage
+                        : this.initialSupportingText;
+
+                    // Update error classes and the supporting text
+                    this.supportingText.classList.toggle("error", !isValid);
+                    this.supportingText.textContent = message;
+
+                    // Temporarily remove aria-live to force re-announcement, if the state changes
+                    const currentAriaLive =
+                        this.supportingText.getAttribute("aria-live");
+                    if (
+                        (isValid && currentAriaLive !== "polite") ||
+                        (!isValid && currentAriaLive !== "assertive")
+                    ) {
+                        this.supportingText.removeAttribute("aria-live");
+                        requestAnimationFrame(() => {
+                            this.supportingText.setAttribute(
+                                "aria-live",
+                                !isValid ? "assertive" : "polite",
+                            );
+                        });
+                    }
+                }
+                // If there is no supporting text, create a new one for the error message
+                // if (!this.supportingText) {
+                //     this.supportingText = document.createElement("p");
+                //     this.supportingText.classList.add("supporting-text", "error");
+                //     this.supportingText.textContent = this.input.validationMessage;
+                //     this.appendChild(this.supportingText);
+                // }
+            }
+
+            get description() {
+                return this.supportingText.textContent as string;
+            }
+
+            set description(value: string) {
+                if (this.supportingText) {
+                    this.supportingText.textContent = value;
+                }
+            }
+
+            setError(message: string, isValid: boolean = false) {
+                // Set custom validity message on input
+                if (!isValid) {
+                    this.input.setCustomValidity(message);
+
+                    this.input.addEventListener("input", () => {
+                        this.input.setCustomValidity("");
+                    });
+                } else {
+                    this.input.setCustomValidity("");
+                }
+
+                this.input.reportValidity();
+
+                // Update the supporting text and visual states
+                if (this.supportingText) {
+                    this.supportingText.textContent =
+                        message || this.initialSupportingText;
+                }
+
+                // Reuse existing error toggle logic
+                // this.toggleError(isValid);
+            }
+
+            formResetCallback() {
+                this.labelText.classList.remove("active");
+                if (this.characterCounter) {
+                    this.characterCounter.textContent = `0/${this.input.maxLength}`;
+                }
+                this.toggleError(true);
+            }
+        },
+    );
+</script>
+
+<style>
+    text-field {
+        display: block;
+        max-width: 480px;
+    }
+
+    text-field:has(input:disabled) {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    label {
+        display: block;
+        position: relative;
+    }
+
+    label::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--color-primary);
+        transform: scaleX(0);
+        transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    label.active::after {
+        transform: scaleX(1);
+    }
+
+    label:has(input:focus)::after {
+        transform: scaleX(1);
+    }
+
+    label.error::after {
+        background-color: var(--color-error);
+    }
+
+    .icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 1rem;
+        color: var(--color-on-surface-variant);
+    }
+
+    .label-text {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        font-family: var(--typescale-body-large-font-family-name);
+        font-weight: var(--typescale-body-large-font-weight);
+        font-size: var(--typescale-body-large-font-size);
+        line-height: var(--typescale-body-large-line-height);
+        letter-spacing: var(--typescale-body-large-letter-spacing);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+        color: var(--color-on-surface-variant);
+    }
+
+    /* If input type is date, .label-text should be red */
+    label:has(input[type="date"]) .label-text {
+        transform: scale(0.75) translateY(-1rem);
+    }
+
+    .label-text.with-icon {
+        left: 3rem;
+    }
+
+    input {
+        /* RESETS */
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        outline: none;
+        background: inherit;
+        border: none;
+        /* STYLES */
+        height: 56px;
+        width: 100%;
+        border-radius: 4px 4px 0 0;
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid var(--color-outline);
+        padding-top: 1rem;
+        padding-right: 1rem;
+        padding-bottom: 0.25rem;
+        padding-left: 1rem;
+        display: flex;
+        font-family: var(--typescale-body-large-font-family-name);
+        font-weight: var(--typescale-body-large-font-weight);
+        font-size: var(--typescale-body-large-font-size);
+        line-height: var(--typescale-body-large-line-height);
+        letter-spacing: var(--typescale-body-large-letter-spacing);
+        background-color: var(--color-surface-container-high);
+        color: var(--color-on-surface);
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        position: absolute;
+        right: 0.75rem;
+        top: 1.25rem;
+        display: none;
+    }
+
+    label.error input {
+        border-bottom: 1px solid var(--color-error);
+    }
+
+    label.error input:hover {
+        border-bottom: 1px solid var(--color-outline);
+    }
+
+    input:hover {
+        background-color: var(--color-surface-container-highest);
+    }
+
+    input:disabled {
+        background-color: var(--color-surface-container-high);
+        color: var(--color-on-surface-variant);
+    }
+
+    input.with-icon {
+        padding-left: 3rem;
+        padding-bottom: 0.25rem;
+    }
+
+    label:has(input:focus) .label-text {
+        transform: scale(0.75) translateY(-1rem);
+        color: var(--color-primary);
+    }
+
+    .label-text {
+        pointer-events: none;
+    }
+
+    .label-text.active {
+        transform: scale(0.75) translateY(-1rem);
+        color: var(--color-on-surface-variant);
+    }
+
+    label:has(input:focus) .label-text.error {
+        color: var(--color-error);
+    }
+
+    .label-text.error {
+        color: var(--color-error);
+    }
+
+    label.error:hover .label-text {
+        color: var(--color-on-surface-variant);
+    }
+
+    /* style autocomplete background */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--color-on-secondary-container);
+        -webkit-box-shadow: 0 0 0 1000px var(--color-secondary-container) inset;
+    }
+
+    /* TRAILING ICON */
+
+    .trailing-icon {
+        position: absolute;
+        right: 0.75rem;
+        top: 1rem;
+        color: var(--color-on-surface-variant);
+        display: none;
+        animation: pop-out 0.3s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .trailing-icon.error {
+        animation: pop-in 0.3s cubic-bezier(0.2, 0, 0, 1);
+        display: block;
+        color: var(--color-error);
+    }
+
+    @keyframes pop-in {
+        from {
+            transform: scale(0);
+        }
+
+        to {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes pop-out {
+        from {
+            transform: scale(1);
+            display: block;
+        }
+
+        to {
+            transform: scale(0);
+            display: none;
+        }
+    }
+
+    /* SUPPORTING */
+
+    .supporting-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding-inline: 1rem;
+        margin-top: 0.25rem;
+    }
+
+    .supporting-text {
+        font-weight: var(--typescale-body-small-font-weight);
+        font-size: var(--typescale-body-small-font-size);
+        letter-spacing: var(--typescale-body-small-letter-spacing);
+        line-height: var(--typescale-body-small-line-height);
+        color: var(--color-on-surface-variant);
+    }
+
+    .supporting-text.error {
+        color: var(--color-error);
+    }
+
+    .supporting-text:empty {
+        display: none;
+    }
+
+    .error-text {
+        color: var(--color-error);
+    }
+
+    .character-counter {
+        font-weight: var(--typescale-body-small-font-weight);
+        font-size: var(--typescale-body-small-font-size);
+        letter-spacing: var(--typescale-body-small-letter-spacing);
+        line-height: var(--typescale-body-small-line-height);
+        color: var(--color-on-surface-variant);
+    }
+</style>
