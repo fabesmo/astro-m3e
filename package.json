@@ -1,5 +1,8 @@
 {
   "name": "astro-m3e",
+  "description": "Astro UI Component library based on Material 3 Expressive design system. HTML are pre-rendered on the server and then hydrated with Web Components to prevent layout shifts and maintain interactivity.",
+  "homepage": "https://github.com/fabesmo/astro-m3e#readme",
+  "keywords": ["astro", "withastro", "astro-component"],
   "type": "module",
   "version": "0.0.1",
   "scripts": {
