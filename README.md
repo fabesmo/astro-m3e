@@ -2,6 +2,8 @@
 
 A modern Astro UI component library based on **Material 3 Expressive** design system. Components are pre-rendered on the server and then hydrated with Web Components to prevent layout shifts while maintaining full interactivity.
 
+> ⚠️ **Alpha Stage Warning**: This library is currently in alpha development. APIs may change, and some features might be unstable. Use with caution in production environments.
+
 ## Features
 
 - 🎨 **Material 3 Expressive Design** - Beautiful, modern UI components
