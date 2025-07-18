@@ -23,7 +23,7 @@ npm install astro-m3e
 
 ```astro
 ---
-import { TextField } from 'astro-m3e';
+import { TextField, Button, Anchor } from 'astro-m3e';
 ---
 
 <TextField 
@@ -32,6 +32,10 @@ import { TextField } from 'astro-m3e';
   icon="email" 
   supportingText="Enter your email address"
 />
+
+<Button variant="filled" icon="send">
+  Submit
+</Button>
 ```
 
 2. Import the global styles in your layout:
@@ -129,6 +133,86 @@ import { SelectField } from 'astro-m3e';
 - `supportingText` (string, optional) - Helper text below the select
 - All standard HTML select attributes are supported
 
+### Action Components
+
+#### Button
+A versatile button component with multiple Material 3 variants and styling options.
+
+```astro
+---
+import { Button } from 'astro-m3e';
+---
+
+<!-- Basic usage -->
+<Button>Click me</Button>
+
+<!-- Different variants -->
+<Button variant="filled">Filled Button</Button>
+<Button variant="outlined">Outlined Button</Button>
+<Button variant="text">Text Button</Button>
+<Button variant="elevated">Elevated Button</Button>
+<Button variant="tonal">Tonal Button</Button>
+
+<!-- With icons -->
+<Button variant="filled" icon="send">
+  Send Message
+</Button>
+
+<!-- Different sizes -->
+<Button size="small">Small</Button>
+<Button size="medium">Medium</Button>
+<Button size="large">Large</Button>
+```
+
+**Props:**
+- `variant` (string, optional) - Button style variant: `"elevated"`, `"filled"`, `"tonal"`, `"outlined"`, `"text"` (default: `"filled"`)
+- `shape` (string, optional) - Button shape: `"rounded"`, `"square"` (default: `"rounded"`)
+- `size` (string, optional) - Button size: `"extra-small"`, `"small"`, `"medium"`, `"large"`, `"extra-large"` (default: `"small"`)
+- `icon` (string, optional) - Material Design icon name
+- `iconSrc` (string, optional) - Custom icon source URL
+- All standard HTML button attributes are supported
+
+#### Anchor
+A styled anchor component that shares the same visual design as Button but renders as a link.
+
+```astro
+---
+import { Anchor } from 'astro-m3e';
+---
+
+<!-- Basic usage -->
+<Anchor href="/about">About Us</Anchor>
+
+<!-- Different variants -->
+<Anchor href="/contact" variant="filled">Contact</Anchor>
+<Anchor href="/help" variant="outlined">Help</Anchor>
+<Anchor href="/docs" variant="text">Documentation</Anchor>
+
+<!-- With icons -->
+<Anchor href="/download" variant="filled" icon="download">
+  Download
+</Anchor>
+
+<!-- External links -->
+<Anchor 
+  href="https://example.com" 
+  variant="elevated" 
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  External Link
+</Anchor>
+```
+
+**Props:**
+- `variant` (string, optional) - Anchor style variant: `"elevated"`, `"filled"`, `"tonal"`, `"outlined"`, `"text"` (default: `"filled"`)
+- `shape` (string, optional) - Anchor shape: `"rounded"`, `"square"` (default: `"rounded"`)
+- `size` (string, optional) - Anchor size: `"extra-small"`, `"small"`, `"medium"`, `"large"`, `"extra-large"` (default: `"small"`)
+- `icon` (string, optional) - Material Design icon name
+- `iconSrc` (string, optional) - Custom icon source URL
+- `floating` (boolean, optional) - Floating action button style (default: `false`)
+- All standard HTML anchor attributes are supported
+
 ### Icon Component
 
 #### Symbol
@@ -204,6 +288,8 @@ All components are fully typed with TypeScript. Import types for enhanced develo
 
 ```typescript
 import type { Props as TextFieldProps } from 'astro-m3e/TextField';
+import type { Props as ButtonProps } from 'astro-m3e/Button';
+import type { Props as AnchorProps } from 'astro-m3e/Anchor';
 ```
 
 ## Browser Support
