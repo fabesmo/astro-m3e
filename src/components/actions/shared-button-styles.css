@@ -1,0 +1,273 @@
+/* Shared Button/Anchor Styles */
+a,
+button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    font-family: var(--typescale-label-large-font-family-name);
+    font-weight: var(--typescale-label-large-font-weight);
+    font-size: var(--typescale-label-large-font-size);
+    letter-spacing: var(--typescale-label-large-letter-spacing);
+    line-height: var(--typescale-label-large-line-height);
+    height: 2.5rem;
+    -webkit-tap-highlight-color: transparent;
+    gap: 0.5rem;
+    width: fit-content;
+}
+
+button,
+a {
+    &.extra-small {
+        height: 32px;
+        border-radius: 16px;
+    }
+
+    &.small {
+        height: 40px;
+        border-radius: 20px;
+    }
+
+    &.medium {
+        height: 56px;
+        padding-inline: 1.5rem;
+        border-radius: 28px;
+        font-size: 16px;
+    }
+
+    &.large {
+        height: 96px;
+        padding-inline: 3rem;
+        border-radius: 48px;
+        font-size: 24px;
+
+        &:active {
+            border-radius: 2rem;
+        }
+    }
+
+    &.extra-large {
+        height: 136px;
+        border-radius: 68px;
+    }
+}
+
+/* ELEVATED VARIANT */
+.elevated {
+    padding: 0 24px;
+    background: var(--color-surface-container);
+    color: var(--color-primary);
+    border-radius: 1.25rem;
+    transition: box-shadow ease 0.3s;
+    box-shadow: 0 3px 6px -3px rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.elevated:hover {
+    background: var(--color-surface-container-high);
+    box-shadow: 0 4px 8px -3px rgba(0, 0, 0, 0.5);
+}
+
+.elevated:focus {
+    background: var(--color-surface-container-high);
+    box-shadow: 0 6px 12px -3px rgba(0, 0, 0, 0.5);
+}
+
+.elevated:active {
+    background: var(--color-surface-container-highest);
+    box-shadow: 0 6px 12px -3px rgba(0, 0, 0, 0.5);
+}
+
+.elevated span {
+    margin-right: 0.25rem;
+    margin-left: -0.5rem;
+}
+
+.elevated:disabled {
+    background-color: var(--color-surface-variant);
+    color: var(--color-on-surface-variant);
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* FILLED VARIANT */
+.filled {
+    padding: 0 24px;
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+    border: none;
+    border-radius: 1.25rem;
+    transition: box-shadow ease 0.3s;
+}
+
+.filled:hover {
+    background-color: color-mix(in oklab,
+            var(--color-primary),
+            var(--color-background) 5%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.filled:focus {
+    background-color: color-mix(in oklab,
+            var(--color-primary),
+            var(--color-background) 14%);
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.4);
+}
+
+.filled:active {
+    background-color: color-mix(in oklab,
+            var(--color-primary),
+            var(--color-background) 11%);
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.4);
+}
+
+.filled:disabled {
+    background-color: var(--color-surface-variant);
+    pointer-events: none;
+}
+
+.filled:disabled:hover {
+    background-color: var(--color-on-surface);
+    opacity: 0.12;
+    box-shadow: none;
+}
+
+.filled span {
+    margin-left: -0.5rem;
+}
+
+/* FILLED TONAL VARIANT */
+.tonal {
+    padding: 0 24px;
+    color: var(--color-on-secondary-container);
+    background: var(--color-secondary-container);
+    border-radius: 1.25rem;
+    transition: box-shadow ease 0.3s;
+    border: none;
+}
+
+.tonal:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.tonal:active {
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.4);
+}
+
+.tonal::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-on-secondary-container);
+    opacity: 0;
+    transition: opacity ease 0.3s;
+}
+
+.tonal:hover::after {
+    opacity: 0.05;
+}
+
+.tonal:focus::after {
+    opacity: 0.14;
+}
+
+.tonal:active::after {
+    opacity: 0.11;
+}
+
+.tonal svg {
+    margin-right: 0.25rem;
+    margin-left: -0.5rem;
+}
+
+.tonal span {
+    margin-right: 0.25rem;
+    margin-left: -0.5rem;
+}
+
+/* OUTLINED VARIANT */
+.outlined {
+    padding: 0 24px;
+    color: var(--color-primary);
+    background: transparent;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-outline);
+    transition: box-shadow ease 0.3s;
+}
+
+.outlined:hover {
+    background-color: color-mix(in oklab,
+            var(--color-primary),
+            var(--color-background) 98%);
+}
+
+.outlined:focus {
+    background-color: color-mix(in oklab,
+            var(--color-primary),
+            var(--color-background) 95%);
+}
+
+.outlined:active {
+    background-color: color-mix(in oklab,
+            var(--color-primary),
+            var(--color-background) 95%);
+}
+
+.outlined:disabled {
+    opacity: 0.3;
+}
+
+.outlined span {
+    margin-left: -0.5rem;
+}
+
+.outlined img {
+    height: 18px;
+    width: 18px;
+    margin-right: 0.25rem;
+    margin-left: -0.5rem;
+}
+
+/* TEXT VARIANT */
+.text {
+    padding: 0 12px;
+    color: var(--color-primary);
+    background: inherit;
+    border: none;
+    border-radius: 1.25rem;
+}
+
+.text::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-primary);
+    opacity: 0;
+    transition: opacity ease 0.3s;
+}
+
+.text:hover::after {
+    opacity: 0.05;
+}
+
+.text:focus::after {
+    opacity: 0.14;
+}
+
+.text:active::after {
+    opacity: 0.11;
+}
+
+.text:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}

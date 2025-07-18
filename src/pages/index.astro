@@ -6,9 +6,42 @@ import Layout from '../layouts/Layout.astro';
 
 import TextField from '../components/inputs/TextField.astro';
 import "../assets/globals.css";
+import Button from '../components/actions/Button.astro';
+import Anchor from '../components/actions/Anchor.astro';
 ---
 
 <Layout>
 	<TextField label="Email" type="email" icon='home' />
 	<TextField label="Password" type="password" />
+	<Button variant="filled" icon="home" size='large'>
+		Filled
+	</Button>
+	<Button variant="outlined" icon="home">
+		Outlined
+	</Button>
+	<Button variant="text" icon="home">
+		Text
+	</Button>
+	<Button variant="elevated" icon="home">
+		Elevated
+	</Button>
+	<Button variant="tonal" icon="home">
+		Tonal
+	</Button>
+
+	<Anchor href="#" variant="filled" icon="home">
+		Filled Anchor
+	</Anchor>
+	<Anchor href="#" variant="outlined" icon="home">
+		Outlined Anchor
+	</Anchor>
+	<Anchor href="#" variant="text" icon="home">
+		Text Anchor
+	</Anchor>
+	<Anchor href="#" variant="elevated" icon="home">
+		Elevated Anchor
+	</Anchor>
+	<Anchor href="#" variant="tonal" icon="home">
+		Filled Tonal Anchor
+	</Anchor>
 </Layout>

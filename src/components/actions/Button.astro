@@ -1,0 +1,34 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Symbol from "../Symbol.astro";
+
+interface Props extends HTMLAttributes<"button"> {
+    variant?: "elevated" | "filled" | "tonal" | "outlined" | "text";
+    shape?: "rounded" | "square";
+    size?: "extra-small" | "small" | "medium" | "large" | "extra-large";
+    icon?: string;
+    iconSrc?: string;
+}
+    
+const {
+    variant = "filled",
+    shape = "rounded",
+    size = "small",
+    icon,
+    iconSrc,
+    ...attributes
+} = Astro.props;
+---
+
+<button
+    class:list={[variant, attributes.class, size, shape]}
+    {...attributes}
+>
+    {icon && <Symbol name={icon} />}
+    {iconSrc && <img src={iconSrc} alt="" />}
+    <slot />
+</button>
+
+<style>
+    @import "./shared-button-styles.css";
+</style>
