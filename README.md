@@ -25,7 +25,7 @@ npm install astro-m3e
 
 ```astro
 ---
-import { TextField, Button, Anchor } from 'astro-m3e';
+import { TextField, Button, Anchor, Snackbar } from 'astro-m3e';
 ---
 
 <TextField 
@@ -38,6 +38,8 @@ import { TextField, Button, Anchor } from 'astro-m3e';
 <Button variant="filled" icon="send">
   Submit
 </Button>
+
+<Snackbar />
 ```
 
 2. Import the global styles in your layout:
@@ -215,6 +217,44 @@ import { Anchor } from 'astro-m3e';
 - `floating` (boolean, optional) - Floating action button style (default: `false`)
 - All standard HTML anchor attributes are supported
 
+### Communication Components
+
+#### Snackbar
+A toast notification component for displaying brief messages to users with automatic dismissal and manual close option.
+
+```astro
+---
+import { Snackbar } from 'astro-m3e';
+---
+
+<!-- Add the snackbar container to your layout -->
+<Snackbar />
+
+<!-- Use JavaScript to show notifications -->
+<script>
+  function showNotification() {
+    const snackbar = document.querySelector('snack-bar');
+    snackbar.show('Message sent successfully!');
+  }
+</script>
+
+<button onclick="showNotification()">Show Notification</button>
+```
+
+**Usage:**
+- Add the `<Snackbar />` component once in your layout or page
+- Use JavaScript to call the `show(message)` method on the `snack-bar` element
+- Messages automatically disappear after 5 seconds
+- Users can manually close messages using the close button
+
+**Features:**
+- Automatic dismissal after 5 seconds
+- Manual close button with customizable text
+- Smooth animations for show/hide transitions
+- Fixed positioning at the bottom center of the screen
+- Stacked display for multiple notifications
+- Material 3 inverse surface styling
+
 ### Icon Component
 
 #### Symbol
@@ -292,6 +332,7 @@ All components are fully typed with TypeScript. Import types for enhanced develo
 import type { Props as TextFieldProps } from 'astro-m3e/TextField';
 import type { Props as ButtonProps } from 'astro-m3e/Button';
 import type { Props as AnchorProps } from 'astro-m3e/Anchor';
+import type { Props as SnackbarProps } from 'astro-m3e/Snackbar';
 ```
 
 ## Browser Support
