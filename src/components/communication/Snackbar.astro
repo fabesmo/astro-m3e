@@ -1,0 +1,125 @@
+<snack-bar></snack-bar>
+
+<template id="toast-template">
+    <div class="toast">
+        <span class="label-large"></span>
+        <button class="text">Cerrar</button>
+    </div>
+</template>
+
+<script>
+    customElements.define(
+        "snack-bar",
+        class extends HTMLElement {
+            show(message: string) {
+                const toast = document.createElement("toast-message");
+                toast.setAttribute("message", message);
+                this.appendChild(toast);
+            }
+        },
+    );
+
+    customElements.define(
+        "toast-message",
+        class extends HTMLElement {
+            timeoutId: number | null;
+
+            constructor() {
+                super();
+                this.timeoutId = null;
+            }
+
+            connectedCallback() {
+                const template = document.getElementById(
+                    "toast-template",
+                ) as HTMLTemplateElement;
+                const fragment = template.content.cloneNode(
+                    true,
+                ) as DocumentFragment;
+                this.appendChild(fragment);
+
+                const message = this.getAttribute("message");
+                const label = this.querySelector(
+                    ".label-large",
+                ) as HTMLSpanElement;
+                label.textContent = message;
+                const button = this.querySelector(
+                    "button",
+                ) as HTMLButtonElement;
+                button.onclick = () => {
+                    this.close();
+                };
+                this.timeoutId = window.setTimeout(() => this.close(), 5000);
+            }
+
+            close() {
+                const toast = this.querySelector(".toast") as HTMLElement;
+                toast.classList.add("close");
+                toast.addEventListener("animationend", () => this.remove(), {
+                    once: true,
+                });
+            }
+
+            disconnectedCallback() {
+                if (this.timeoutId) clearTimeout(this.timeoutId);
+            }
+        },
+    );
+</script>
+
+<style>
+    snack-bar {
+        position: fixed;
+        bottom: 6.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        z-index: 200;
+    }
+
+    snack-bar button {
+        color: var(--color-inverse-primary);
+    }
+
+    .toast {
+        padding-inline: 1rem;
+        background-color: var(--color-inverse-surface);
+        color: var(--color-inverse-on-surface);
+        border-radius: 0.25rem;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.16);
+        padding-block: 0.75rem;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        animation: pop-in-snackbar 0.3s ease-out;
+        transform-origin: bottom;
+    }
+
+    .close {
+        animation: pop-out-snackbar 0.3s ease-out;
+    }
+
+    @keyframes pop-in-snackbar {
+        0% {
+            opacity: 0;
+            transform: scaleY(0.4);
+        }
+        100% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+    }
+
+    @keyframes pop-out-snackbar {
+        0% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        100% {
+            opacity: 0;
+            transform: scaleY(0.4);
+        }
+    }
+</style>
