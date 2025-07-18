@@ -9,7 +9,7 @@ interface Props extends HTMLAttributes<"button"> {
     icon?: string;
     iconSrc?: string;
 }
-    
+
 const {
     variant = "filled",
     shape = "rounded",
@@ -20,10 +20,7 @@ const {
 } = Astro.props;
 ---
 
-<button
-    class:list={[variant, attributes.class, size, shape]}
-    {...attributes}
->
+<button class:list={[variant, size, shape, attributes.class]} {...attributes}>
     {icon && <Symbol name={icon} />}
     {iconSrc && <img src={iconSrc} alt="" />}
     <slot />
