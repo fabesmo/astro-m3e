@@ -4,6 +4,10 @@
   "homepage": "https://github.com/fabesmo/astro-m3e#readme",
   "license": "MIT",
   "author": "Your Name <your.email@example.com>",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
   "keywords": [
     "astro",
     "withastro",
@@ -13,7 +17,7 @@
     "web-components"
   ],
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/fabesmo/astro-m3e.git"
@@ -28,6 +32,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.12.0"
+    "@material-design-icons/svg": "^0.14.15",
+    "astro": "^5.12.0",
+    "material-symbols": "^0.35.2"
   }
 }
