@@ -20,79 +20,112 @@
 //     return { default: fallbackInnerHTML };
 // });
 
+// interface Props {
+//     name: string;
+//     fill?: boolean;
+//     variant?: "filled" | "outlined" | "round" | "sharp" | "two-tone";
+//     size?: string;
+//     color?: string;
+//     [key: string]: any;
+// }
+
+// const {
+//     name,
+//     fill,
+//     variant: userVariant,
+//     size = "24px",
+//     color,
+//     ...attributes
+// } = Astro.props;
+
+// const variant = userVariant ?? (fill ? "filled" : "outlined");
+
+// function normalize(n: string) {
+//     return n
+//         .trim()
+//         .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+//         .replace(/[-\s]+/g, "_")
+//         .toLowerCase();
+// }
+// const normalizedName = normalize(name);
+
+// // Cargamos cada carpeta por separado con ruta relativa
+// const iconModules = {
+//     ...import.meta.glob(
+//         "../../node_modules/@material-design-icons/svg/filled/*.svg",
+//         { as: "raw", eager: true },
+//     ),
+//     ...import.meta.glob(
+//         "../../node_modules/@material-design-icons/svg/outlined/*.svg",
+//         { as: "raw", eager: true },
+//     ),
+//     ...import.meta.glob(
+//         "../../node_modules/@material-design-icons/svg/round/*.svg",
+//         { as: "raw", eager: true },
+//     ),
+//     ...import.meta.glob(
+//         "../../node_modules/@material-design-icons/svg/sharp/*.svg",
+//         { as: "raw", eager: true },
+//     ),
+//     ...import.meta.glob(
+//         "../../node_modules/@material-design-icons/svg/two-tone/*.svg",
+//         { as: "raw", eager: true },
+//     ),
+// } as Record<string, string>;
+
+// function getIcon(variant: string, baseName: string): string | undefined {
+//     const directKey = `../../node_modules/@material-design-icons/svg/${variant}/${baseName}.svg`;
+//     if (iconModules[directKey]) return iconModules[directKey];
+
+//     // fallback búsqueda por sufijo
+//     const foundKey = Object.keys(iconModules).find((k) =>
+//         k.endsWith(`/${variant}/${baseName}.svg`),
+//     );
+//     return foundKey ? iconModules[foundKey] : undefined;
+// }
+
+// let innerHTML =
+//     getIcon(variant, normalizedName) ??
+//     getIcon("outlined", "help") ??
+//     '<svg viewBox="0 0 24 24"></svg>';
+
+// if (import.meta.env.DEV && !getIcon(variant, normalizedName)) {
+//     console.warn(
+//         `[Symbol] Icono no encontrado: variant='${variant}' name='${name}' normalizado='${normalizedName}'`,
+//     );
+// }
+
 interface Props {
     name: string;
     fill?: boolean;
-    variant?: "filled" | "outlined" | "round" | "sharp" | "two-tone";
     size?: string;
     color?: string;
     [key: string]: any;
 }
 
-const {
-    name,
-    fill,
-    variant: userVariant,
-    size = "24px",
-    color,
-    ...attributes
-} = Astro.props;
+const { name, fill, size = "24px", color, ...attributes } = Astro.props;
+const iconStyle = fill ? "-fill" : "";
 
-const variant = userVariant ?? (fill ? "filled" : "outlined");
+// Carga estática de todos los SVG (asegura inclusión en build)
+const icons = import.meta.glob("../assets/symbols/rounded/*.svg", {
+    as: "raw",
+    eager: true,
+});
 
-function normalize(n: string) {
-    return n
-        .trim()
-        .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
-        .replace(/[-\s]+/g, "_")
-        .toLowerCase();
-}
-const normalizedName = normalize(name);
+// Clave esperada
+const key = `../assets/symbols/rounded/${name}${iconStyle}.svg`;
 
-// Cargamos cada carpeta por separado con ruta relativa
-const iconModules = {
-    ...import.meta.glob(
-        "../../node_modules/@material-design-icons/svg/filled/*.svg",
-        { as: "raw", eager: true },
-    ),
-    ...import.meta.glob(
-        "../../node_modules/@material-design-icons/svg/outlined/*.svg",
-        { as: "raw", eager: true },
-    ),
-    ...import.meta.glob(
-        "../../node_modules/@material-design-icons/svg/round/*.svg",
-        { as: "raw", eager: true },
-    ),
-    ...import.meta.glob(
-        "../../node_modules/@material-design-icons/svg/sharp/*.svg",
-        { as: "raw", eager: true },
-    ),
-    ...import.meta.glob(
-        "../../node_modules/@material-design-icons/svg/two-tone/*.svg",
-        { as: "raw", eager: true },
-    ),
-} as Record<string, string>;
-
-function getIcon(variant: string, baseName: string): string | undefined {
-    const directKey = `../../node_modules/@material-design-icons/svg/${variant}/${baseName}.svg`;
-    if (iconModules[directKey]) return iconModules[directKey];
-
-    // fallback búsqueda por sufijo
-    const foundKey = Object.keys(iconModules).find((k) =>
-        k.endsWith(`/${variant}/${baseName}.svg`),
-    );
-    return foundKey ? iconModules[foundKey] : undefined;
-}
-
-let innerHTML =
-    getIcon(variant, normalizedName) ??
-    getIcon("outlined", "help") ??
-    '<svg viewBox="0 0 24 24"></svg>';
-
-if (import.meta.env.DEV && !getIcon(variant, normalizedName)) {
-    console.warn(
-        `[Symbol] Icono no encontrado: variant='${variant}' name='${name}' normalizado='${normalizedName}'`,
-    );
+// Fallback
+let innerHTML: string | undefined = icons[key] as string | undefined;
+if (!innerHTML) {
+    // Verifica también sin -fill por si falta esa variante
+    if (iconStyle && icons[`../assets/symbols/rounded/${name}.svg`]) {
+        innerHTML = icons[`../assets/symbols/rounded/${name}.svg`] as string;
+    } else {
+        innerHTML = icons[
+            "../assets/symbols/rounded/emoji_symbols.svg"
+        ] as string;
+    }
 }
 ---
 
